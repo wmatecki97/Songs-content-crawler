@@ -12,7 +12,7 @@ namespace MusicTextCrawler
     {
         static void Main(string[] args)
         {
-            string file = "Categories";
+            string file = "../../Categories";
             var files = Directory.GetFiles(file);
 
             foreach (var f in files)
@@ -69,20 +69,20 @@ namespace MusicTextCrawler
         {
             IEnumerable<string> songsContent = new List<string>();
             //for (int i = 0; i < artists.Count(); i++)
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < 20 && i< artists.Count(); i++)
             {
                 Console.WriteLine("Artist: " + i + " of " + artists.Count());
-                string url = "https://www.google.com/search?q=" + artists[i].Replace(' ', '+') + "tekstowo";
+                string url = "https://www.tekstowo.pl/szukaj,wykonawca," + artists[i].Replace(' ', '+');
                 string downloadString = "";
                 try { downloadString = client.DownloadString(url); }
                 catch (Exception) { }
-                int startIndex = downloadString.IndexOf("https://www.tekstowo.pl/");
+                int startIndex = downloadString.IndexOf("/piosenki_artysty");
                 if (startIndex > 0)
                 {
                     int endIndex = downloadString.IndexOf("\"", startIndex);
                     if (endIndex > 0)
                     {
-                        string listUrl = downloadString.Substring(startIndex, endIndex - startIndex);
+                        string listUrl = "https://www.tekstowo.pl" + downloadString.Substring(startIndex, endIndex - startIndex);
                         var songsUrls = GetSongsUrls(listUrl, client);
                         songsContent = songsContent.Concat(GetSongsContent(songsUrls, client));
                     }
@@ -126,7 +126,7 @@ namespace MusicTextCrawler
             int startIndex = downloadString.IndexOf("ranking-lista");
             if (startIndex > 0)
             {
-                int end = downloadString.IndexOf("padding", startIndex);
+                int end = downloadString.IndexOf("<!-- end right column -->", startIndex);
                 if (end > 0)
                 {
                     string list = downloadString.Substring(startIndex, end - startIndex);
